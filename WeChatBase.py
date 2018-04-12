@@ -34,6 +34,10 @@ class WeChatBase():
     def OneClick(self, x, y):
         os.system('adb shell input tap ' + str(x) + ' ' + str(y))
 
+    # 双击操作
+    def DoubleClock(self, x, y):
+        pass
+
     # 返回按钮
     def ClickReturn(self):
         os.system('adb shell input keyevent 4')
@@ -42,13 +46,13 @@ class WeChatBase():
     def Rolling(self, x1, y1, x2, y2):
         os.system('adb shell input swipe ' + str(x1) + ' ' + str(y1) + ' ' + str(x2) + ' ' + str(y2))
 
-    # 上滑半个屏幕
-    def RollingUpScreen(self):
-        self.Rolling(int(self.width/2), self.height-100, int(self.width/2), int(self.height/2));
+    # 上滑屏幕
+    def RollingUpScreen(self, step):
+        self.Rolling(int(self.width/2), int(self.height/2), int(self.width/2), int(self.height/2) - step)
 
-    # 下滑半个屏幕
-    def RollingDownScreen(self):
-        self.Rolling(int(self.width/2), int(self.height/2), int(self.width/2), self.height-100);
+    # 下滑屏幕
+    def RollingDownScreen(self, step):
+        self.Rolling(int(self.width/2), int(self.height/2), int(self.width/2), int(self.height/2) + step)
 
     # 获取屏幕尺寸，非常重要
     def GetScreenSize(self):
@@ -97,9 +101,10 @@ class WeChatBase():
         w, h = template.shape[::-1]
         res = cv2.matchTemplate(img_gray, template, cv2.TM_CCOEFF_NORMED)
         loc = np.where( res >= self.threshold)
-        #min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(res) # 找到最大值和最小值
+        min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(res) # 找到最大值和最小值
         #print(cv2.minMaxLoc(res))
         #print(loc)
+        #print(zip(*loc[::-1]))
         for pt in zip(*loc[::-1]):
             #print (pt)
             cv2.rectangle(img_rgb, pt, (pt[0] + w, pt[1] + h), (7,249,151), 2)   
@@ -107,7 +112,11 @@ class WeChatBase():
         # plt.xticks([]), plt.yticks([])
         # plt.show()
         cv2.imwrite(str(image) + '_d.png',img_rgb)
-        return min_loc, max_loc
+        return max_loc
+
+    # For Test
+    def Test(self):
+        print("Test")
 
     # 点赞
     def ClickLike(self):
@@ -119,21 +128,21 @@ class WeChatBase():
         self.PullScreenShot('01.png')
 
         # 找到待点赞的朋友圈
-        min_loc, max_loc = self.MatchImg('01.png', tmp1)
-        x = int((min_loc[0] + max_loc[0])/2)
-        y = int((min_loc[1] + max_loc[1])/2)
-        print (x , y)
+        max_loc1 = self.MatchImg('01.png', tmp1)
+        if (max_loc1[0]>self.width/2 and max_loc1[1] > 200):
+            print(u"找到朋友圈消息，坐标：", max_loc1)
 
-        # 点开赞框
-        self.OneClick(max_loc[0]+10, max_loc[1]+10)
-        self.Sleep(1.5)
-        
-        #找未赞的朋友圈
-        self.PullScreenShot('02.png')
-        min_loc, max_loc = self.MatchImg('02.png', tmp2)
-        x = int((min_loc[0] + max_loc[0])/2)
-        y = int((min_loc[1] + max_loc[1])/2)
-
-        # 点赞
-        #self.OneClick(x, y)
-                
+            # 点开赞框
+            print(u"查看是否赞过")
+            self.OneClick(max_loc1[0]+10, max_loc1[1]+10)
+            self.Sleep(1.5)
+            self.PullScreenShot('02.png')
+            max_loc2 = self.MatchImg('02.png', tmp3)
+            # 检查是否赞过
+            if (max_loc2[0] > self.width/3 and max_loc2[1] > 200):
+                print(u"未赞过，正在点赞")
+                self.OneClick(max_loc2[0]+10, max_loc2[1]+10)
+                print(u"点赞成功")
+            else:
+                print(u"已经赞过，忽略")
+                self.OneClick(max_loc1[0]+10, max_loc1[1]+10)

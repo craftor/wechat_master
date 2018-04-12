@@ -17,14 +17,11 @@ def main():
     #myWeChat.UnlockScreen(0)
     myWeChat.ReLaunchWechat()
     myWeChat.EnterMoment()
-    for i in range(5):
-        myWeChat.Sleep(1)
-        myWeChat.RollingUpScreen()
-
-def test():
-    myWeChat.ClickLike()
 
 if __name__ == '__main__':
     myWeChat = WeChatBase.WeChatBase()
     #main()
-    test()
+    while(True):
+        myWeChat.ClickLike()
+        myWeChat.RollingUpScreen(500)
+        myWeChat.Sleep(0.5)
