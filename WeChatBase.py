@@ -90,7 +90,7 @@ class WeChatBase():
         self.LaunchWeChat()
 
     # 找到匹配图标
-    def mathc_img(self, image, Target):
+    def MatchImg(self, image, Target):
         img_rgb = cv2.imread(image)
         img_gray = cv2.cvtColor(img_rgb, cv2.COLOR_BGR2GRAY)
         template = cv2.imread(Target,0)
@@ -100,7 +100,6 @@ class WeChatBase():
         #min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(res) # 找到最大值和最小值
         #print(cv2.minMaxLoc(res))
         #print(loc)
-        
         for pt in zip(*loc[::-1]):
             #print (pt)
             cv2.rectangle(img_rgb, pt, (pt[0] + w, pt[1] + h), (7,249,151), 2)   
@@ -120,7 +119,7 @@ class WeChatBase():
         self.PullScreenShot('01.png')
 
         # 找到待点赞的朋友圈
-        min_loc, max_loc = self.mathc_img('01.png', tmp1)
+        min_loc, max_loc = self.MatchImg('01.png', tmp1)
         x = int((min_loc[0] + max_loc[0])/2)
         y = int((min_loc[1] + max_loc[1])/2)
         print (x , y)
@@ -131,7 +130,7 @@ class WeChatBase():
         
         #找未赞的朋友圈
         self.PullScreenShot('02.png')
-        min_loc, max_loc = self.mathc_img('02.png', tmp2)
+        min_loc, max_loc = self.MatchImg('02.png', tmp2)
         x = int((min_loc[0] + max_loc[0])/2)
         y = int((min_loc[1] + max_loc[1])/2)
 
