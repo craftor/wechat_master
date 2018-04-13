@@ -23,6 +23,7 @@ if __name__ == '__main__':
     myWeChat = WeChatBase.WeChatBase()
 
     #InterWeChatMoment()
+    #myWeChat.CheckInMoment()
 
     while(True):
         myWeChat.ClickLike()

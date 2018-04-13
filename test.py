@@ -4,8 +4,8 @@ import cv2
 import numpy as np
 from matplotlib import pyplot as plt
 
-image = '02.png'
-Target = 'template/1080/dianzan_rukou.png'
+image = '01.png'
+Target = 'template/720/zan_rukou.png'
 
 img_rgb = cv2.imread(image)
 img_gray = cv2.cvtColor(img_rgb, cv2.COLOR_BGR2GRAY)

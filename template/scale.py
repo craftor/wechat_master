@@ -21,7 +21,7 @@ def processImage(filesource, destsource, name, imgtype):
     # print(im.size[0])
     # rate = max(im.size[0]/640.0 if im.size[0] > 640 else 0, im.size[1]/1136.0 if im.size[1] > 1136 else 0)
     # if rate:
-    im.thumbnail((im.size[0]*3/4,im.size[1]*3/4))
+    im.thumbnail((im.size[0]*1/2,im.size[1]*1/2))
     im.save(destsource + name, imgtype)
 
 def run():
