@@ -25,8 +25,8 @@ pyq_fanhui     = 'pyq_fanhui.png'     # 朋友圈，返回键图标
 pyq_text       = 'pyq_text.png'       # 朋友圈，文字
 pyq_xiangji    = 'pyq_xiangji.png'    # 朋友圈，相机图标
 # 截图文件名
-ScreenShotFileName = "Tmp.png"
-ScreenShotDetected = "Ded.png"
+ScreenShotFileName = "Tmp01.png"
+ScreenShotDetected = "Tmp02.png"
 
 class WeChatBase():
 
