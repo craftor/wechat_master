@@ -6,13 +6,8 @@ from matplotlib import pyplot as plt
 
 VERSION = "0.1"
 
-
-methods = ['cv2.TM_CCOEFF', 'cv2.TM_CCOEFF_NORMED', 'cv2.TM_CCORR',
-            'cv2.TM_CCORR_NORMED', 'cv2.TM_SQDIFF', 'cv2.TM_SQDIFF_NORMED']
-
-
 class WeChatBase():
-    
+
     # 启动初始化
     def __init__(self):
         self.width = 1080  # 默认屏幕宽
@@ -25,7 +20,7 @@ class WeChatBase():
     def PullScreenShot(self, filename):
         os.system('adb shell screencap -p /sdcard/' + filename )
         os.system('adb pull /sdcard/' + filename + ' .')
-    
+
     # 延时，时间单位为秒
     def Sleep(self, t):
         time.sleep(t)
@@ -69,9 +64,9 @@ class WeChatBase():
         self.LightScreen()
         self.Sleep(1)
         # 根据phone类型，选择滑动解锁方式
-        if phone == 0:
-            self.RollingUpScreen()
-    
+        if phone == 0: # 上滑
+            self.RollingUpScreen(800)
+
     # 启动微信
     def LaunchWeChat(self):
         os.system('adb shell am start com.tencent.mm/com.tencent.mm.ui.LauncherUI')
@@ -101,18 +96,24 @@ class WeChatBase():
         w, h = template.shape[::-1]
         res = cv2.matchTemplate(img_gray, template, cv2.TM_CCOEFF_NORMED)
         loc = np.where( res >= self.threshold)
-        min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(res) # 找到最大值和最小值
+        #min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(res) # 找到最大值和最小值
         #print(cv2.minMaxLoc(res))
         #print(loc)
-        #print(zip(*loc[::-1]))
+
         for pt in zip(*loc[::-1]):
-            #print (pt)
-            cv2.rectangle(img_rgb, pt, (pt[0] + w, pt[1] + h), (7,249,151), 2)   
-        # plt.imshow(img_rgb)
-        # plt.xticks([]), plt.yticks([])
-        # plt.show()
-        cv2.imwrite(str(image) + '_d.png',img_rgb)
-        return max_loc
+            cv2.rectangle(img_rgb, pt, (pt[0] + w, pt[1] + h), (7,249,151), 2)
+        cv2.imwrite(str(image) + '_d.png',img_rgb) # 保存识别目标后的图
+
+        for pp in loc:
+            #print ('xxx', a)
+            if len(pp) :
+                #print ("Yes")
+                min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(res) # 找到最大值和最小值
+                #print (max_loc)
+                return True, max_loc
+            else:
+                #print ("Empty")
+                return False, []
 
     # For Test
     def Test(self):
@@ -121,28 +122,49 @@ class WeChatBase():
     # 点赞
     def ClickLike(self):
 
-        tmp1 = 'template\dianzan_rukou.png'
-        tmp2 = 'template\zan_icon.png'
-        tmp3 = 'template\zan_text.png'
-        tmp4 = 'template\zan_quxiao_text.png'
+        tmp1 = 'template/1080/dianzan_rukou.png'
+        tmp2 = 'template/1080/zan_icon.png'
+        tmp3 = 'template/1080/zan_text.png'
+        tmp4 = 'template/1080/zan_quxiao_text.png'
         self.PullScreenShot('01.png')
 
-        # 找到待点赞的朋友圈
-        max_loc1 = self.MatchImg('01.png', tmp1)
-        if (max_loc1[0]>self.width/2 and max_loc1[1] > 200):
-            print(u"找到朋友圈消息，坐标：", max_loc1)
+        # 查找待点赞的朋友圈
+        yes1, max_loc1 = self.MatchImg('01.png', tmp1)
 
+        if yes1:
+            print(u"找到朋友圈消息，坐标：", max_loc1)
             # 点开赞框
             print(u"查看是否赞过")
             self.OneClick(max_loc1[0]+10, max_loc1[1]+10)
-            self.Sleep(1.5)
+            self.Sleep(1)
             self.PullScreenShot('02.png')
-            max_loc2 = self.MatchImg('02.png', tmp3)
-            # 检查是否赞过
-            if (max_loc2[0] > self.width/3 and max_loc2[1] > 200):
+            yes2, max_loc2 = self.MatchImg('02.png', tmp3)
+
+            # 查看是否赞过
+            if yes2 :
                 print(u"未赞过，正在点赞")
                 self.OneClick(max_loc2[0]+10, max_loc2[1]+10)
                 print(u"点赞成功")
             else:
                 print(u"已经赞过，忽略")
                 self.OneClick(max_loc1[0]+10, max_loc1[1]+10)
+
+        else:
+            print(u"未发现最新朋友圈消息")
+        # if (max_loc1[0]>self.width/2 and max_loc1[1] > 200):
+        #     print(u"找到朋友圈消息，坐标：", max_loc1)
+        #
+        #     # 点开赞框
+        #     print(u"查看是否赞过")
+        #     self.OneClick(max_loc1[0]+10, max_loc1[1]+10)
+        #     self.Sleep(1.5)
+        #     self.PullScreenShot('02.png')
+        #     max_loc2 = self.MatchImg('02.png', tmp3)
+        #     # 检查是否赞过
+        #     if (max_loc2[0] > self.width/3 and max_loc2[1] > 200):
+        #         print(u"未赞过，正在点赞")
+        #         self.OneClick(max_loc2[0]+10, max_loc2[1]+10)
+        #         print(u"点赞成功")
+        #     else:
+        #         print(u"已经赞过，忽略")
+        #         self.OneClick(max_loc1[0]+10, max_loc1[1]+10)
