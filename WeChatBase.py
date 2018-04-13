@@ -19,11 +19,14 @@ zan_rukou      = 'zan_rukou.png'      # 点赞，入口
 zan_icon       = 'zan_icon.png'       # 点赞，图标
 zan_text       = 'zan_text.png'       # 点赞，文字
 zan_quxiao     = 'zan_quxiao.png'     # 点赞，取消
+zan_pinglun    = 'zan_pinglun.png'    # 点赞，评论
+zan_fasong     = 'zan_fasong.png'     # 点赞，发送
 pyq_fanhui     = 'pyq_fanhui.png'     # 朋友圈，返回键图标
 pyq_text       = 'pyq_text.png'       # 朋友圈，文字
 pyq_xiangji    = 'pyq_xiangji.png'    # 朋友圈，相机图标
 # 截图文件名
-file_first = "01.png"  # 第一个
+ScreenShotFileName = "Tmp.png"
+ScreenShotDetected = "Ded.png"
 
 class WeChatBase():
 
@@ -34,10 +37,14 @@ class WeChatBase():
         self.threshold = 0.7 # 图像比对默认阈值
         self.GetScreenSize() # 初始化先通过截图试获取屏幕分辨率
 
+    # 打印消息
+    def mylog(self, text):
+        print(text)
+
     # 截屏
-    def PullScreenShot(self, filename):
-        os.system('adb shell screencap -p /sdcard/' + filename )
-        os.system('adb pull /sdcard/' + filename + ' .')
+    def PullScreenShot(self):
+        os.system('adb shell screencap -p /sdcard/' + ScreenShotFileName)
+        os.system('adb pull /sdcard/' + ScreenShotFileName + ' .')
 
     # 延时，时间单位为秒
     def Sleep(self, t):
@@ -61,16 +68,18 @@ class WeChatBase():
 
     # 上滑屏幕
     def RollingUpScreen(self, step):
+        self.mylog("屏幕上滑 " + str(step) + " pix")
         self.Rolling(int(self.width/2), int(self.height/2), int(self.width/2), int(self.height/2) - step)
 
     # 下滑屏幕
     def RollingDownScreen(self, step):
+        self.mylog("屏幕下滑 " + str(step) + " pix")
         self.Rolling(int(self.width/2), int(self.height/2), int(self.width/2), int(self.height/2) + step)
 
     # 获取屏幕尺寸，非常重要
     def GetScreenSize(self):
-        self.PullScreenShot(file_first)
-        img = cv2.imread(file_first, 3)
+        self.PullScreenShot()
+        img = cv2.imread(ScreenShotFileName, 3)
         self.height, self.width = img.shape[:2]
 
     # 点击电源键，点亮屏幕
@@ -107,9 +116,9 @@ class WeChatBase():
         self.LaunchWeChat()
 
     # 找匹配图标
-    def MatchImg(self, image, Target):
+    def MatchImg(self, Target):
         # 原始图片
-        img_rgb = cv2.imread(image)
+        img_rgb = cv2.imread(ScreenShotFileName)
         img_gray = cv2.cvtColor(img_rgb, cv2.COLOR_BGR2GRAY)
         # 比对模板图片
         temp_url = dir_root + "/" + resolution + "/" + Target
@@ -129,7 +138,7 @@ class WeChatBase():
         for pt in zip(*loc[::-1]):
             cv2.rectangle(img_rgb, pt, (pt[0] + w, pt[1] + h), (7,249,151), 2)
         # 保存识别目标后的图
-        cv2.imwrite(str(image) + '_d.png',img_rgb)
+        cv2.imwrite(ScreenShotDetected, img_rgb)
 
         # 检查比对结果
         for pp in loc:
@@ -145,14 +154,14 @@ class WeChatBase():
 
     # For Test
     def Test(self):
-        print("Test")
+        mylog("Test")
 
     # 检查是否在主菜单下
-    def CheckIsMain(self, FileName):
+    def CheckIsMain(self):
         # 比对条件
-        yes1, max_loc1 = self.MatchImg(FileName, main_tongxunlu)
-        yes2, max_loc2 = self.MatchImg(FileName, main_faxian)
-        yes3, max_loc3 = self.MatchImg(FileName, main_me)
+        yes1, max_loc1 = self.MatchImg(main_tongxunlu)
+        yes2, max_loc2 = self.MatchImg(main_faxian)
+        yes3, max_loc3 = self.MatchImg(main_me)
         # 检查
         if (yes1 and yes2 and yes3):
             return True
@@ -160,11 +169,11 @@ class WeChatBase():
             return False
 
     # 检查是否在朋友圈状态下
-    def CheckInMoment(self, FileName):
+    def CheckInMoment(self):
         # 比对条件
-        yes1, max_loc1 = self.MatchImg(FileName, pyq_fanhui)
-        yes2, max_loc2 = self.MatchImg(FileName, pyq_text)
-        yes3, max_loc3 = self.MatchImg(FileName, pyq_xiangji)
+        yes1, max_loc1 = self.MatchImg(pyq_fanhui)
+        yes2, max_loc2 = self.MatchImg(pyq_text)
+        yes3, max_loc3 = self.MatchImg(pyq_xiangji)
         # 检查
         if (yes1 and yes2 and yes3):
             return True
@@ -173,46 +182,65 @@ class WeChatBase():
 
     # 点赞
     def ClickLike(self):
-        # 截图文件名
-        FileName1 = 'ClickLike1.png'
-        FileName2 = 'ClickLike2.png'
 
         # 截图
-        self.PullScreenShot(FileName1)
+        self.PullScreenShot()
 
         # 检查是否在朋友圈下
-        yes = self.CheckInMoment(FileName1)
-        if yes:
-            pass
+        if (self.CheckInMoment()):
+            self.mylog(u"当前在朋友圈下")
         else:
-            print(u"不在朋友圈下")
-            return 0
+            self.mylog(u"不在朋友圈下")
+            self.Sleep(0.3)
+            self.mylog(u"检查是否在微信界面")
+            if (self.CheckIsMain()):
+                self.mylog(u"当前在微信主界面，准备切换到朋友圈界面")
+                self.EnterMoment()
+                # 截图检查
+                self.PullScreenShot()
+                if (self.CheckInMoment()):
+                    self.mylog(u"已经切换到朋友圈下")
+            else:
+                self.mylog(u"不在微信界面下")
+                # 启动微信
+                self.mylog(u"正在启动微信")
+                self.LaunchWeChat()
+                # 截图检查
+                self.PullScreenShot()
+                if (self.CheckIsMain()):
+                    self.mylog(u"微信启动成功")
+                    self.mylog(u"正在切换到朋友圈")
+                    self.EnterMoment()
+                    # 截图检查
+                    self.PullScreenShot()
+                    if (self.CheckInMoment()):
+                        self.mylog(u"已经切换到朋友圈下")
 
         # 查找待点赞的朋友圈
-        yes1, max_loc1 = self.MatchImg(FileName1, zan_rukou)
+        yes1, max_loc1 = self.MatchImg(zan_rukou)
 
         if yes1:
-            print(u"找到朋友圈消息，坐标：", max_loc1)
+            self.mylog(u"找到朋友圈消息，坐标：" + str(max_loc1))
             # 点开赞框
-            print(u"查看是否赞过")
+            self.mylog(u"查看是否赞过")
             self.OneClick(max_loc1[0]+10, max_loc1[1]+10)
             self.Sleep(1)
-            self.PullScreenShot(FileName2)
-            yes2, max_loc2 = self.MatchImg(FileName2, zan_text)
-            yes3, max_loc3 = self.MatchImg(FileName2, zan_quxiao)
+            self.PullScreenShot()
+            yes2, max_loc2 = self.MatchImg(zan_text)
+            yes3, max_loc3 = self.MatchImg(zan_quxiao)
 
             # 查看是否赞过
             if yes2 :
-                print(u"未赞过，准备点赞")
+                self.mylog(u"未赞过，准备点赞")
                 self.OneClick(max_loc2[0]+10, max_loc2[1]+10)
-                print(u"点赞成功")
+                self.mylog(u"点赞成功")
             #取消赞操作
             # elif yes3:
-            #     print(u"已经赞过，取消")
+            #     mylog(u"已经赞过，取消")
             #     self.OneClick(max_loc2[0]+10, max_loc2[1]+10)
             # 忽略
             else :
-                print(u"已经赞过，忽略")
+                self.mylog(u"已经赞过，忽略")
                 self.OneClick(max_loc1[0]+10, max_loc1[1]+10)
         else:
-            print(u"未发现最新朋友圈消息")
+            self.mylog(u"未发现最新朋友圈消息")

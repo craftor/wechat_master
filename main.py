@@ -13,12 +13,6 @@ def showImg(res):
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
-# 进入微信朋友圈之前的一些操作
-def InterWeChatMoment():
-    #myWeChat.UnlockScreen(0)
-    myWeChat.ReLaunchWechat()
-    myWeChat.EnterMoment()
-
 if __name__ == '__main__':
     myWeChat = WeChatBase.WeChatBase()
 
