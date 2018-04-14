@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE Project SYSTEM "Project-5.1.dtd">
 <!-- eric project file for project AndroidMaster -->
-<!-- Saved: 2018-04-14, 11:42:11 -->
+<!-- Saved: 2018-04-14, 21:27:20 -->
 <!-- Copyright (C) 2018 ,  -->
 <Project version="5.1">
   <Language>en_US</Language>
@@ -20,6 +20,9 @@
   <Forms>
     <Form>main.ui</Form>
   </Forms>
+  <Resources>
+    <Resource>source/src.qrc</Resource>
+  </Resources>
   <Others>
     <Other>.gitignore</Other>
   </Others>

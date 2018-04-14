@@ -192,7 +192,7 @@
   </layout>
  </widget>
  <resources>
-  <include location="src.qrc"/>
+  <include location="source/src.qrc"/>
  </resources>
  <connections/>
 </ui>

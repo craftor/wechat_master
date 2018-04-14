@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'D:\git\Python\AndroidMaster\main.ui'
+# Form implementation generated from reading ui file 'D:\git\Python\wechat_assistant\main.ui'
 #
 # Created by: PyQt5 UI code generator 5.10.1
 #
@@ -15,7 +15,7 @@ class Ui_Dialog(object):
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(":/pic/icon.jpg"), QtGui.QIcon.Normal, QtGui.QIcon.On)
         Dialog.setWindowIcon(icon)
-        #Dialog.setSizeGripEnabled(True)
+        Dialog.setSizeGripEnabled(True)
         self.horizontalLayout = QtWidgets.QHBoxLayout(Dialog)
         self.horizontalLayout.setObjectName("horizontalLayout")
         self.gridLayout = QtWidgets.QGridLayout()

@@ -32,7 +32,7 @@ class WeChatBase():
     # 启动初始化
     def __init__(self):
         self.myClient = AndroidBase()
-        self.myClient.dir_root = dir_root + "/" + resolution# 指定图标存放目录
+        self.myClient.dir_root = dir_root + "/" + resolution # 指定图标存放目录
 
     # 启动微信
     def LaunchWeChat(self):
@@ -72,6 +72,14 @@ class WeChatBase():
         # 截图
         self.myClient.PullScreenShot()
 
+        print(u"在朋友圈状态下")
+
+        if (self.CheckInMoment()):
+            print(u"在朋友圈状态下")
+        else:
+            print(u"不在朋友圈下")
+            #return 0
+
         # # 检查是否在朋友圈下
         # if (self.CheckInMoment()):
         #     self.LogPrint(u"当前在朋友圈下")
@@ -106,7 +114,7 @@ class WeChatBase():
         yes1, max_loc1 = self.myClient.MatchImg(zan_rukou)
 
         if yes1:
-            print(u"找到朋友圈消息，坐标：" + str(max_loc1))
+            print(u"找到朋友圈消息，坐标" + str(max_loc1))
             # 点开赞框
             print(u"查看是否赞过")
             self.myClient.OneClick(max_loc1[0]+10, max_loc1[1]+10)
