@@ -59,9 +59,9 @@ class Main(QWidget, Ui_Dialog):
     def ThreadClickLike(self):
         while(self.t_LikeRun):
             #self.LogPrint(u"点赞开始")
-            self.myWeChat.ClickLike()
-            print(u"上滑屏幕")
-            self.myAndroid.RollingUpScreen(500)
+            if self.myWeChat.ClickLike():
+                print(u"上滑屏幕")
+                self.myAndroid.RollingUpScreen(500)
             #self.Sleep(0.5)
             #self.LogPrint(u"点赞结束")
 

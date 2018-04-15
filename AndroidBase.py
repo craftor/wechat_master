@@ -122,7 +122,7 @@ class AndroidBase():
         img_gray = cv2.cvtColor(img_rgb, cv2.COLOR_BGR2GRAY)
         # 比对模板图片
         temp_url = self.dir_root + "/" + Target
-        print(temp_url)
+        #print(temp_url)
         template = cv2.imread(temp_url, 0)
         # 获取模板图片尺寸
         w, h = template.shape[::-1]
@@ -145,6 +145,7 @@ class AndroidBase():
             # 如果不为空，说明有比对成果的内容
             if len(pp) :
                 #print ("Yes")
+                print(pp)
                 min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(res) # 找到最大值和最小值
                 #print (max_loc)
                 return True, max_loc

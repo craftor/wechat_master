@@ -31,6 +31,7 @@ class WeChatBase():
 
     # 启动初始化
     def __init__(self):
+        self.FaildCnt = 0
         self.myClient = AndroidBase()
         self.myClient.dir_root = dir_root + "/" + resolution # 指定图标存放目录
 
@@ -41,9 +42,9 @@ class WeChatBase():
 
     # 点击“发现” -> "朋友圈"
     def EnterMoment(self):
-        self.myClient.OneClick(int(self.width*5/8), int(self.height*19/20))
+        self.myClient.OneClick(int(self.myClient.width*5/8), int(self.myClient.height*19/20))
         self.myClient.Sleep(1)
-        self.myClient.OneClick(int(self.width*5/8), int(self.height*1/5))
+        self.myClient.OneClick(int(self.myClient.width*5/8), int(self.myClient.height*1/5))
 
     # 重启微信
     def ReLaunchWechat(self):
@@ -62,9 +63,14 @@ class WeChatBase():
         return result
 
     # 检查是否在朋友圈状态下
-    def CheckInMoment(self):
-        result = self.myClient.CompareThree(pyq_fanhui, pyq_text, pyq_xiangji)
+    def CheckIsMoment(self):
+        result = self.myClient.CompareTwo(pyq_text, pyq_xiangji)
         return result
+
+    # 检查是否黑屏
+    def CheckIsLocked(self):
+        # TODO
+        return False
 
     # 点赞
     def ClickLike(self):
@@ -72,13 +78,34 @@ class WeChatBase():
         # 截图
         self.myClient.PullScreenShot()
 
-        print(u"在朋友圈状态下")
-
-        if (self.CheckInMoment()):
-            print(u"在朋友圈状态下")
+        if (self.CheckIsMoment()):
+            #print(u"在朋友圈状态下")
+            pass
         else:
-            print(u"不在朋友圈下")
-            #return 0
+            #print(u"当前不在朋友圈下！")
+            if self.CheckIsMain():
+                print(u"检测到在微信主界面，正在切换到朋友圈。。。")
+                self.EnterMoment()
+                self.myClient.PullScreenShot()
+                if (self.CheckIsMoment()):
+                    print(u"已经切换到朋友圈状态下")
+            else:
+                print(u"微信可能未启动，正在尝试启动微信。。。")
+                self.LaunchWeChat()
+                self.myClient.PullScreenShot()
+                if self.CheckIsMain():
+                    print(u"检测到在微信主界面，正在切换到朋友圈。。。")
+                    self.EnterMoment()
+                    self.myClient.PullScreenShot()
+                    if (self.CheckIsMoment()):
+                        print(u"已经切换到朋友圈状态下")
+                else:
+                    if (self.FaildCnt == 2):
+                        self.myClient.ClickReturn()
+                        self.FaildCnt = 0
+                    else:
+                        self.FaildCnt = self.FaildCnt + 1
+                    return False
 
         # # 检查是否在朋友圈下
         # if (self.CheckInMoment()):
@@ -117,8 +144,8 @@ class WeChatBase():
             print(u"找到朋友圈消息，坐标" + str(max_loc1))
             # 点开赞框
             print(u"查看是否赞过")
-            self.myClient.OneClick(max_loc1[0]+10, max_loc1[1]+10)
-            self.myClient.Sleep(1)
+            self.myClient.OneClick(max_loc1[0], max_loc1[1])
+            self.myClient.Sleep(0.5)
             self.myClient.PullScreenShot()
             yes2, max_loc2 = self.myClient.MatchImg(zan_text)
             yes3, max_loc3 = self.myClient.MatchImg(zan_quxiao)
@@ -126,7 +153,7 @@ class WeChatBase():
             # 查看是否赞过
             if yes2 :
                 print(u"未赞过，准备点赞")
-                self.myClient.OneClick(max_loc2[0]+10, max_loc2[1]+10)
+                self.myClient.OneClick(max_loc2[0], max_loc2[1])
                 print(u"点赞成功")
             #取消赞操作
             # elif yes3:
@@ -135,6 +162,8 @@ class WeChatBase():
             # 忽略
             else :
                 print(u"已经赞过，忽略")
-                self.myClient.OneClick(max_loc1[0]+10, max_loc1[1]+10)
+                self.myClient.OneClick(max_loc1[0], max_loc1[1])
         else:
             print(u"未发现最新朋友圈消息")
+
+        return True
