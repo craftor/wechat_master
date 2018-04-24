@@ -19,8 +19,10 @@ class Main_Test():
     def __init__(self):
         #self.myAndroid = AndroidBase()
         self.myDouyin = DouYinU2()
+        self.myDouyin.ip = "192.168.1.120"
 
     def Run(self):
+
         while(True):
             # 暂时视频播放
             LogPrint(u"暂时视频")
@@ -36,8 +38,8 @@ class Main_Test():
             #self.myDouyin.SendMsgXY(u"互粉，谢谢^_^")
             # 暂时视频播放
             #self.myDouyin.client.click(500, 500)
-            LogPrint(u"评论")
-            self.myDouyin.Comment("666")
+            #LogPrint(u"评论")
+            #self.myDouyin.Comment("666")
             # 下一个
             LogPrint(u"下一个")
             self.myDouyin.client.swipe(0.5, 0.8, 0.5, 0.2, 0.1)

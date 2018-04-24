@@ -5,6 +5,8 @@ import cv2
 import numpy as np
 from matplotlib import pyplot as plt
 import subprocess
+import pymysql
+from GenLicense import GenLicense
 
 # 截图文件名
 ScreenShotFileName = "Tmp01.png"
@@ -17,6 +19,14 @@ class AndroidBase():
         self.height = 1920
         self.dir_root = "."
         self.threshold = 0.7 # 图像比对默认阈值
+        self.uid = GenLicense()
+
+    # 验证序列号是否有效
+    def CheckLicense(self, license):
+        if (self.uid.ConnectDB()):
+            self.CheckLicense(license)
+        else:
+            print(u"无法连接服务器，请检查网络！")
 
     # 打印日志
     def LogPrint(self, text):

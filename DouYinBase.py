@@ -22,7 +22,7 @@ IP=""
 class DouYinU2():
     # 初始化
     def __init__(self):
-        self.ip = "192.168.1.118"
+        self.ip = "192.168.1.120"
         #selr.Android = AndroidBase()
         self.client = u2.connect(self.ip)
         # set delay 1.5s after each UI click and click
@@ -39,7 +39,8 @@ class DouYinU2():
 
     # 点赞
     def AwesomeMe(self):
-        self.client(resourceId="com.ss.android.ugc.aweme:id/a62").click()
+        #self.client(resourceId="com.ss.android.ugc.aweme:id/a62").click()
+        self.client.click(0.915, 0.501)
 
     # 加关注
     def AddFriend(self):
