@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import datetime,sys
 import os, time
 import cv2
 import numpy as np
@@ -16,6 +17,13 @@ class AndroidBase():
         self.height = 1920
         self.dir_root = "."
         self.threshold = 0.7 # 图像比对默认阈值
+
+    # 打印日志
+    def LogPrint(self, text):
+        now = datetime.datetime.now()
+        otherStyleTime = now.strftime("%Y-%m-%d %H:%M:%S")
+        mystr = otherStyleTime + "  " + text
+        print(mystr)
 
     # 重新定向命令
     def SendCommand(self, command):
@@ -145,7 +153,7 @@ class AndroidBase():
             # 如果不为空，说明有比对成果的内容
             if len(pp) :
                 #print ("Yes")
-                print(pp)
+                #print(pp)
                 min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(res) # 找到最大值和最小值
                 #print (max_loc)
                 return True, max_loc
